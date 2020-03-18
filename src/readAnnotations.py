@@ -20,11 +20,12 @@ data = readJson.readJSONFile(jsonFilePath)
 #%%
 # Output: {'name': 'Bob', 'languages': ['English', 'Fench']}
 #print(data)
-print(data.keys())
+#print(data.keys())
 annotations = data["annotations"]
 images=data["images"]
 categories = data["categories"]
 info = data["info"]
+
 #%%
 # Convert to Data frame
 
@@ -37,28 +38,29 @@ categories = pd.DataFrame.from_dict(categories)
 data=None
 
 #%%
+#Create column image_id to use for merging the two data frames
 images["image_id"]  = images["id"]
+
 #%%
+# Merge annotations and images on image_id
 
 trainDf = (pd.merge(annotations, images, on='image_id'))
+#Remove Unnecessary fields
 trainDf = trainDf.drop(["id_y","id_x"], axis = 1)
 
 print(trainDf.columns)
 #%%
+# Unset annotations and images dataframe as they are no longer needed
+annotations = images = None
+
+
+#%%
 # Images and Seq ID
 image_id = "901c0b74-21bc-11ea-a13a-137349068a90"
-seq_id = str(images[images["id"]==image_id]["seq_id"])
-print(seq_id)
-print(annotations[annotations["image_id"]==image_id])
-print(trainDf[trainDf["seq_id"]==seq_id])
-#%%
+
 # read an image and print on screen
 picLocation = 'C:\\Users\\manoj\\PycharmProjects\\tf-tuto\\data\\iwildcam-2020\\train\\400X400\\'+image_id+'.jpg'
 
-def showImage(loc):
-    import matplotlib as plt
-    from matplotlib import pyplot 
-    im = pyplot.imread(loc)
-    pyplot.imshow(im)
+import readImage as ri # Import readImage.py 
 
-showImage(picLocation)
+ri.showImage(picLocation)
