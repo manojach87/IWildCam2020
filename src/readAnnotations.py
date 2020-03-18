@@ -10,9 +10,13 @@ import numpy as np
 import pandas as pd
 import cv2
 import json
+import readJson  # in the file called readJson.py
+
 #%%
-with open('C:\\Users\\manoj\\PycharmProjects\\tf-tuto\\data\\iwildcam-2020\\iwildcam2020_train_annotations.json') as f:
-  data = json.load(f)
+jsonFilePath='C:\\Users\\manoj\\PycharmProjects\\tf-tuto\\data\\iwildcam-2020\\iwildcam2020_train_annotations.json'
+
+data = readJson.readJSONFile(jsonFilePath)
+
 #%%
 # Output: {'name': 'Bob', 'languages': ['English', 'Fench']}
 #print(data)
@@ -35,7 +39,7 @@ data=None
 #%%
 images["image_id"]  = images["id"]
 #%%
-tainDf= None
+
 trainDf = (pd.merge(annotations, images, on='image_id'))
 trainDf = trainDf.drop(["id_y","id_x"], axis = 1)
 
