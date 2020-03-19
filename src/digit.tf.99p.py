@@ -36,10 +36,10 @@ sampleSubmissionDf= pd.read_csv(path+"\\sample_submission.csv")
 #sampleSubmissionDf.head()
 testDf= pd.read_csv(path+"\\test.csv")
 #testDf.head()
-trainDf= pd.read_csv(path+"\\train.csv")
+trainDfX= pd.read_csv(path+"\\train.csv")
 #print(trainDf.head())
 
-trainDf.index +=1
+trainDfX.index +=1
 #trainDf.index
 
 #trainDf.drop(columns=["label"]) #, axis=1
@@ -52,7 +52,7 @@ from sklearn.ensemble import RandomForestClassifier
 import numpy as np
 from sklearn.model_selection import train_test_split
 
-X_train, X_test, y_train, y_test = train_test_split(trainDf.drop(columns=["label"]), trainDf.label, test_size=0.2)
+X_train, X_test, y_train, y_test = train_test_split(trainDfX.drop(columns=["label"]), trainDfX.label, test_size=0.2)
 
 X_train = X_train/255.0
 X_test  = X_test /255.0

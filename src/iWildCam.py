@@ -36,7 +36,7 @@ categories = pd.DataFrame.from_dict(categories)
 
 #%%
 #Remove data from memory
-data=None
+del data
 
 #%%
 #Create column image_id to use for merging the two data frames
@@ -45,14 +45,15 @@ images["image_id"]  = images["id"]
 #%%
 # Merge annotations and images on image_id
 
-trainDf = (pd.merge(annotations, images, on='image_id'))
+trainDf1 = (pd.merge(annotations, images, on='image_id'))
 #Remove Unnecessary fields
-trainDf = trainDf.drop(["id_y","id_x"], axis = 1)
+trainDf1 = trainDf1.drop(["id_y","id_x"], axis = 1)
 
-print(trainDf.columns)
+print(trainDf1.columns)
 #%%
 # Unset annotations and images dataframe as they are no longer needed
-annotations = images = None
+del annotations
+del images
 #%%
 from PIL import Image
 # Open the image form working directory
@@ -75,14 +76,21 @@ def getImage(filePath,h=28,w=28):
 #     image=Image.open(trainPath+file_name).convert('LA')
 #     image.thumbnail(200,200)
 #%%
-images=[{"file_name":file_name,"image":np.asarray(Image.open(trainPath+file_name).convert('LA'))} for file_name in trainDf.file_name[:]]
+trainDf=[{"file_name":file_name,
+          "image":
+              np.concatenate(
+              np.asarray(Image.open(trainPath+file_name).convert('L')).tolist()
+              ).ravel().tolist()
+          } 
+         for file_name in trainDf1.file_name[:100]]
 #images=[[file_name,Image.open(trainPath+file_name).convert('LA')] for file_name in trainDf.file_name[:10]]
-
 
 #trainDf["image"]= Image.open(trainPath+trainDf.file_name[1]).convert('LA')
 #%%
-images = pd.DataFrame.from_dict(images)
+trainDf = pd.DataFrame.from_dict(trainDf)
 
+#%%
+print(np.asarray(trainDf.image.tolist()).reshape(100,1,100,100))
 #images["image"]= np.asarray(images["image"])
 #%%
 print(len(trainDf.file_name))
@@ -93,19 +101,62 @@ print(len(trainDf.file_name))
 # x=[np.asarray(images["image"][i]) for i in range(len(images["image"]))]
 # print(x)
 
-images=[np.asarray(Image.open(trainPath+file_name).convert('LA')) for file_name in trainDf.file_name[:]][10000]
+#images=[np.asarray(Image.open(trainPath+file_name).convert('LA')) for file_name in trainDf.file_name[:]][10000]
 
 
 # images["x"]=x
+#del images
 #%%
 
-trainDf=trainDf.drop(['count', 'image_id', 'seq_id', 'width', 'height'],axis=1)
+trainDf1=trainDf1.drop(['count', 'image_id', 'seq_id', 'width', 'height'],axis=1)
 #%%
-images = (pd.merge(trainDf, images, on='file_name'))
+trainDf = (pd.merge(trainDf, trainDf1, on='file_name'))
+
+
 
 #%%
-x=images[:10]
-print(type(x))
+x=trainDf[:10]
+print(x.columns)
+
+trainDf=trainDf.drop(['file_name', 'seq_num_frames', 'location','datetime', 'frame_num'],axis=1)
+
+#%%
+#print(trainDf.image[0].tolist())
+#%%
+x=trainDf
+#%%
+trainDf=x
+#%%
+#trainDf["image"]=[trainDf.image[i].tolist()[0] for i in range(len(trainDf.image))]
+#trainDf["image"]=[trainDf.image[i].reshape(100,100,2) for i in range(len(trainDf.image))]
+#%%
+pd.DataFrame(trainDf).to_csv("trainDf.csv")
+#%%
+trainDf=np.asarray(trainDf)
+#%%
+trainDf=[[arr[1]]+list(arr[0]) for arr in trainDf]
+#%%
+trainDf=np.asarray(trainDf[1])
+#%%
+trainDf=pd.DataFrame(trainDf)
+#%%
+
+data3 = np.arange(1000100).reshape(100, 10001)
+#%%
+data3 = data3.reshape((data3.shape[0]*1, 100, 100))
+
+#%%
+trainDf["img"]=[list(arr[0])+list(arr[1]) for arr in trainDf.image]
+
+#%%
+#x["image"]=x[0]
+print(len(np.array(np.array(x.image).flatten())))
+print(len(np.array(np.array(x.image).flatten()).tolist()))
+
+#%%
+#print((trainDf.image)[1].shape)
+print((trainDf.image.values))
+
 # In[3]:
 
 
@@ -113,16 +164,37 @@ print(type(x))
 
 from sklearn.model_selection import train_test_split
 
-X_train, X_test, y_train, y_test = train_test_split(trainDf.drop(columns=["category_id"]), trainDf.category_id, test_size=0.2)
+#X_train, X_test, y_train, y_test = train_test_split(trainDf.drop(columns=["category_id"]), trainDf.category_id, test_size=0.2)
+X_train, X_test, y_train, y_test = train_test_split(trainDf["image"], trainDf["category_id"], test_size=0.2)
 
+#%%
 '''
 X_train = X_train/255.0
 X_test  = X_test /255.0
-
-X_train = X_train.values.reshape(-1,28,28,1)
-X_test = X_test.values.reshape(-1,28,28,1)
 '''
 
+
+#%%
+
+
+X_train = X_train.reshape(X_train.shape[0], 100, 100, 2)
+X_test = X_test.reshape(X_test.shape[0], 100, 100, 2)
+input_shape = (100, 100, 1)
+
+#%%
+X_train = X_train.values.reshape(-1,100,100,1)
+#X_test = X_test.values.reshape(-1,28,28,2)
+
+#%%
+
+#%%
+#import numpy as np
+
+X_train = np.arange(len(X_train)).reshape(len(X_train),2, 10000 )
+
+#X_train = X_train.reshape((X_train.shape[0]*2, 28, 28))
+
+print(X_train.shape)
 # In[4]:
 
 
@@ -134,7 +206,7 @@ model = keras.Sequential([
 
 model = keras.Sequential()
 
-model.add(keras.layers.Conv2D(filters = 32, kernel_size = (5,5),padding = 'Same',activation ='relu', input_shape = (400,400,1)))
+model.add(keras.layers.Conv2D(filters = 32, kernel_size = (5,5),padding = 'Same',activation ='relu', input_shape = (100,100,1)))
 model.add(keras.layers.Conv2D(filters = 32, kernel_size = (5,5),padding = 'Same',activation ='relu'))
 model.add(keras.layers.MaxPool2D(pool_size=(2,2)))
 model.add(keras.layers.Dropout(0.25))
