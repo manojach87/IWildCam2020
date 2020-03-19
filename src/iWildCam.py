@@ -82,7 +82,7 @@ trainDf=[{"file_name":file_name,
               np.asarray(Image.open(trainPath+file_name).convert('L')).tolist()
               ).ravel().tolist()
           } 
-         for file_name in trainDf1.file_name[:100]]
+         for file_name in trainDf1.file_name[:100000]]
 #images=[[file_name,Image.open(trainPath+file_name).convert('LA')] for file_name in trainDf.file_name[:10]]
 
 #trainDf["image"]= Image.open(trainPath+trainDf.file_name[1]).convert('LA')
@@ -90,10 +90,10 @@ trainDf=[{"file_name":file_name,
 trainDf = pd.DataFrame.from_dict(trainDf)
 
 #%%
-print(np.asarray(trainDf.image.tolist()).reshape(100,1,100,100))
+#print(np.asarray(trainDf.image.tolist()).reshape(100,1,100,100))
 #images["image"]= np.asarray(images["image"])
 #%%
-print(len(trainDf.file_name))
+#print(len(trainDf.file_name))
 
 #%%
 # print(type(images["image"]  ))
@@ -115,47 +115,46 @@ trainDf = (pd.merge(trainDf, trainDf1, on='file_name'))
 
 
 #%%
-x=trainDf[:10]
-print(x.columns)
+#x=trainDf[:10]
+#print(x.columns)
 
 trainDf=trainDf.drop(['file_name', 'seq_num_frames', 'location','datetime', 'frame_num'],axis=1)
+
 
 #%%
 #print(trainDf.image[0].tolist())
 #%%
-x=trainDf
+#x=trainDf
 #%%
-trainDf=x
+#trainDf=x
 #%%
 #trainDf["image"]=[trainDf.image[i].tolist()[0] for i in range(len(trainDf.image))]
 #trainDf["image"]=[trainDf.image[i].reshape(100,100,2) for i in range(len(trainDf.image))]
 #%%
-pd.DataFrame(trainDf).to_csv("trainDf.csv")
+#pd.DataFrame(trainDf).to_csv("trainDf.csv")
+
 #%%
 trainDf=np.asarray(trainDf)
 #%%
 trainDf=[[arr[1]]+list(arr[0]) for arr in trainDf]
 #%%
-trainDf=np.asarray(trainDf[1])
+#trainDf=np.asarray(trainDf[1])
 #%%
 trainDf=pd.DataFrame(trainDf)
-#%%
-
-data3 = np.arange(1000100).reshape(100, 10001)
-#%%
-data3 = data3.reshape((data3.shape[0]*1, 100, 100))
 
 #%%
-trainDf["img"]=[list(arr[0])+list(arr[1]) for arr in trainDf.image]
+#%%
+#%%trainDf["img"]=[list(arr[0])+list(arr[1]) for arr in trainDf.image]
 
 #%%
 #x["image"]=x[0]
-print(len(np.array(np.array(x.image).flatten())))
-print(len(np.array(np.array(x.image).flatten()).tolist()))
+#print(len(np.array(np.array(x.image).flatten())))
+#print(len(np.array(np.array(x.image).flatten()).tolist()))
 
 #%%
 #print((trainDf.image)[1].shape)
-print((trainDf.image.values))
+#print((trainDf.image.values))
+#print(trainDf.drop(columns=0))
 
 # In[3]:
 
@@ -165,36 +164,38 @@ print((trainDf.image.values))
 from sklearn.model_selection import train_test_split
 
 #X_train, X_test, y_train, y_test = train_test_split(trainDf.drop(columns=["category_id"]), trainDf.category_id, test_size=0.2)
-X_train, X_test, y_train, y_test = train_test_split(trainDf["image"], trainDf["category_id"], test_size=0.2)
+X_train, X_test, y_train, y_test = train_test_split(trainDf.drop(columns=0), trainDf[0], test_size=0.2)
+#X_train, X_test, y_train, y_test = train_test_split(trainDf["image"], trainDf["category_id"], test_size=0.2)
 
 #%%
-'''
+
 X_train = X_train/255.0
 X_test  = X_test /255.0
-'''
+
 
 
 #%%
 
 
-X_train = X_train.reshape(X_train.shape[0], 100, 100, 2)
-X_test = X_test.reshape(X_test.shape[0], 100, 100, 2)
-input_shape = (100, 100, 1)
+# X_train = X_train.reshape(X_train.shape[0], 100, 100, 2)
+# X_test = X_test.reshape(X_test.shape[0], 100, 100, 2)
+# input_shape = (100, 100, 1)
 
 #%%
 X_train = X_train.values.reshape(-1,100,100,1)
-#X_test = X_test.values.reshape(-1,28,28,2)
+X_test = X_test.values.reshape(-1,100,100,1)
 
 #%%
 
 #%%
 #import numpy as np
 
-X_train = np.arange(len(X_train)).reshape(len(X_train),2, 10000 )
+#X_train = np.arange(len(X_train)).reshape(len(X_train),2, 10000 )
 
 #X_train = X_train.reshape((X_train.shape[0]*2, 28, 28))
 
-print(X_train.shape)
+#print(X_train.shape)
+
 # In[4]:
 
 
@@ -221,7 +222,7 @@ model.add(keras.layers.Dropout(0.25))
 model.add(keras.layers.Flatten())
 model.add(keras.layers.Dense(256, activation = "relu"))
 model.add(keras.layers.Dropout(0.5))
-model.add(keras.layers.Dense(10, activation = "softmax"))
+model.add(keras.layers.Dense(267, activation = "softmax"))
 
 #optimizer = RMSprop(lr=0.001, rho=0.9, epsilon=1e-08, decay=0.0)
 
@@ -239,7 +240,7 @@ X_train = np.asarray(X_train)
 # In[6]:
 
 
-model.fit(X_train, y_train, epochs=10)
+model.fit(X_train, y_train, epochs=100)
 
 
 # In[11]:
@@ -331,5 +332,5 @@ submissionDf.to_csv(path+"\\sample_submission.csv",sep=",",index=False)
 # In[ ]:
 
 
-
+del trainDf, X_train, X_test
 
