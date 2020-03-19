@@ -74,7 +74,7 @@ def getImage(filePath,h=28,w=28):
 # for file_name in trainDf.file_name[:10] :
 #     image=Image.open(trainPath+file_name).convert('LA')
 #     image.thumbnail(200,200)
-
+#%%
 images=[{"file_name":file_name,"image":np.asarray(Image.open(trainPath+file_name).convert('LA'))} for file_name in trainDf.file_name[:]]
 #images=[[file_name,Image.open(trainPath+file_name).convert('LA')] for file_name in trainDf.file_name[:10]]
 
