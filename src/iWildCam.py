@@ -82,7 +82,7 @@ trainDf=[{"file_name":file_name,
               np.asarray(Image.open(trainPath+file_name).convert('L')).tolist()
               ).ravel().tolist()
           } 
-         for file_name in trainDf1.file_name[:100000]]
+         for file_name in trainDf1.file_name[:]]
 #images=[[file_name,Image.open(trainPath+file_name).convert('LA')] for file_name in trainDf.file_name[:10]]
 
 #trainDf["image"]= Image.open(trainPath+trainDf.file_name[1]).convert('LA')
@@ -133,6 +133,7 @@ trainDf=trainDf.drop(['file_name', 'seq_num_frames', 'location','datetime', 'fra
 #%%
 #pd.DataFrame(trainDf).to_csv("trainDf.csv")
 
+
 #%%
 trainDf=np.asarray(trainDf)
 #%%
@@ -141,6 +142,8 @@ trainDf=[[arr[1]]+list(arr[0]) for arr in trainDf]
 #trainDf=np.asarray(trainDf[1])
 #%%
 trainDf=pd.DataFrame(trainDf)
+#%%
+trainDf.to_csv("trainDf.csv")
 
 #%%
 #%%
@@ -199,11 +202,11 @@ X_test = X_test.values.reshape(-1,100,100,1)
 # In[4]:
 
 
-model = keras.Sequential([
-    keras.layers.Dense(128, activation="relu"),
-    keras.layers.Dense(64, activation="relu"),
-    keras.layers.Dense(10, activation="softmax")
-    ])
+# model = keras.Sequential([
+#     keras.layers.Dense(128, activation="relu"),
+#     keras.layers.Dense(64, activation="relu"),
+#     keras.layers.Dense(10, activation="softmax")
+#     ])
 
 model = keras.Sequential()
 
@@ -220,13 +223,17 @@ model.add(keras.layers.Dropout(0.25))
 
 
 model.add(keras.layers.Flatten())
-model.add(keras.layers.Dense(256, activation = "relu"))
+model.add(keras.layers.Dense(1000, activation = "relu"))
 model.add(keras.layers.Dropout(0.5))
 model.add(keras.layers.Dense(267, activation = "softmax"))
 
-#optimizer = RMSprop(lr=0.001, rho=0.9, epsilon=1e-08, decay=0.0)
+#optimizer = keras.optimizers.RMSprop(learning_rate=0.00, rho=0.9, epsilon=1e-08, decay=0.0)
+optimizer = keras.optimizers.Adam(learning_rate=0.001)
+#optimizer = keras.optimizers.SGD()
+#optimizer = keras.optimizers.RMSprop()
 
-model.compile(optimizer="adam", loss="sparse_categorical_crossentropy", metrics=["accuracy"])
+#model.compile(optimizer="adam", loss="sparse_categorical_crossentropy", metrics=["accuracy"])
+model.compile(optimizer=optimizer, loss="sparse_categorical_crossentropy", metrics=["accuracy"])
 #model.compile(optimizer = optimizer , loss = "categorical_crossentropy", metrics=["accuracy"])
 
 
@@ -239,10 +246,26 @@ X_train = np.asarray(X_train)
 
 # In[6]:
 
+#%%
+import pandas as pd
+y_train_1he = pd.get_dummies(y_train)
 
-model.fit(X_train, y_train, epochs=100)
+#%%
 
+from sklearn.preprocessing import OneHotEncoder
+enc = OneHotEncoder()
+enc.fit(y_train.reshape(len(y_train),1,))   
+#enc.n_values_
+enc.n_values_
 
+#%%
+model.fit(X_train, y_train_1he, epochs=10)
+
+#%%
+model.fit(X_train, y_train, epochs=240)
+
+#%%
+model.save("model.1.save")
 # In[11]:
 
 
