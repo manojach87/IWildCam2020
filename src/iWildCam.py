@@ -35,6 +35,10 @@ images = pd.DataFrame.from_dict(images)
 categories = pd.DataFrame.from_dict(categories)
 
 #%%
+categories["category_id"]=categories["id"]
+categories["Sk"]=[i for i in range(len(categories))]
+
+#%%
 #Remove data from memory
 del data
 
@@ -43,10 +47,13 @@ del data
 images["image_id"]  = images["id"]
 
 #%%
+#annotations = (pd.merge(annotations, categories, on='category_id'))
+#%%
 # Merge annotations and images on image_id
 
 trainDf1 = (pd.merge(annotations, images, on='image_id'))
 #Remove Unnecessary fields
+#%%
 trainDf1 = trainDf1.drop(["id_y","id_x"], axis = 1)
 
 print(trainDf1.columns)
