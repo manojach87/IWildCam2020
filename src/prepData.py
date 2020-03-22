@@ -294,10 +294,10 @@ model.add(keras.layers.Conv2D(filters = 64, kernel_size = (3,3),padding = 'Same'
 model.add(keras.layers.MaxPool2D(pool_size=(2,2), strides=(2,2)))
 model.add(keras.layers.Dropout(0.25))
 
-# model.add(keras.layers.Conv2D(filters = 64, kernel_size = (3,3),padding = 'Same', activation ='relu'))
-# model.add(keras.layers.Conv2D(filters = 64, kernel_size = (3,3),padding = 'Same', activation ='relu'))
-# model.add(keras.layers.MaxPool2D(pool_size=(2,2), strides=(2,2)))
-# model.add(keras.layers.Dropout(0.25))
+model.add(keras.layers.Conv2D(filters = 64, kernel_size = (3,3),padding = 'Same', activation ='relu'))
+model.add(keras.layers.Conv2D(filters = 64, kernel_size = (3,3),padding = 'Same', activation ='relu'))
+model.add(keras.layers.MaxPool2D(pool_size=(2,2), strides=(2,2)))
+model.add(keras.layers.Dropout(0.25))
 
 model.add(keras.layers.Flatten())
 model.add(keras.layers.Dense(1024, activation = "relu"))
@@ -320,9 +320,11 @@ model.compile(optimizer=optimizer, loss="sparse_categorical_crossentropy", metri
 # In[6]:
 model.load_weights(filepath='src/final_weight.h5')
 #%%
-model.fit(X_train, y_train, epochs=8)
+model.load_weights(filepath='final_weight.conv2x3.1024.h5')
 #%%
-model.save_weights(filepath='final_weight.conv2x3.1024.h5')
+model.fit(X_train, y_train, epochs=10)
+#%%
+model.save_weights(filepath='final_weight.conv2x2.1024.1.h5')
 #%%
 testFiles, testDf =getTestData(jsonTestFilePath)
 
@@ -363,7 +365,8 @@ preds=pd.DataFrame(preds)
 #%%
 
 preds['index1'] = preds.index
-
+#%%
+preds["file_name"]=testFiles
 #%%
 
 #predList["Sk"]=predList[0]
@@ -391,7 +394,7 @@ preds.sort_values("index1", axis = 0, ascending = True, inplace = True, na_posit
 #predList=predList.drop(columns=["0_x","0_y"], axis=1)
 #%%
 ##predList = (pd.merge(predList, , on="Sk"))
-preds["file_name"]=testFiles
+#preds["file_name"]=testFiles
 #%%
 data = readJson.readJSONFile(jsonTestFilePath)
     
@@ -413,5 +416,5 @@ preds.rename(columns={"id": "Id"},inplace = True)
 preds=(pd.merge(submission, preds, on="Id")) #[["Id","Category"]]
 
 #%%
-preds.to_csv("submissison.20200321.2.csv",index=False)
+preds.to_csv("submissison.20200322.2.csv",index=False)
 
