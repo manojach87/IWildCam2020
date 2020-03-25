@@ -19,15 +19,37 @@ trainPath=root+'train\\28X28\\'
 testPath =root+'test\\100X100\\'
 #%%
 
+from PIL import Image
+import os
+
 def getImageAsArray(path,df):
-    from PIL import Image
-    import os
     dataF=[{"file_name":file_name,
               "image":
                   np.concatenate(
                   (np.asarray(Image.open(os.path.join(path, file_name)).convert('L'))) #.tolist()
                   ).ravel().tolist()
               } 
+             for file_name in df.file_name[:]]
+    return dataF
+#%%
+def getImageAsArray1(path,df):
+    dataF=[[file_name]
+           + np.concatenate(
+               np.asarray(
+                   Image.open(os.path.join(path, file_name)).convert('L')
+               )  #/255.0
+             ).tolist()
+             for file_name in df.file_name[:]]
+    return dataF
+#%%
+def getImageAsArray2(path,df):
+    dataF=[[file_name] + df[df["file_name"==file_name]]
+           + np.concatenate(
+               np.asarray(
+                   Image.open(os.path.join(path, file_name))
+                   .convert('L')
+               )/255.0
+             ).tolist()
              for file_name in df.file_name[:]]
     return dataF
 #%%
@@ -40,7 +62,7 @@ def getTrainData(jsonFilePath):
     annotations = data["annotations"]
     images=data["images"]
     categories = data["categories"]
-    info = data["info"]
+    #info = data["info"]
 
     # Convert to Data frame
 
@@ -52,13 +74,15 @@ def getTrainData(jsonFilePath):
     del data
 
     #Create column image_id to use for merging the two data frames
-    images["image_id"]  = images["id"]
+    images.rename(columns={"id": "image_id"},inplace = True)
+    #images["image_id"]  = images["id"]
+    annotations.drop(["id"], axis = 1, inplace=True)
 
     # Merge annotations and images on image_id
 
     trainDf1 = (pd.merge(annotations, images, on='image_id'))
     #Remove Unnecessary fields
-    trainDf1.drop(["id_y","id_x"], axis = 1, inplace=True)
+    #trainDf1.drop(["id_y","id_x"], axis = 1, inplace=True)
 
     #print(trainDf1.columns)
     
@@ -294,10 +318,10 @@ model.add(keras.layers.Conv2D(filters = 64, kernel_size = (3,3),padding = 'Same'
 model.add(keras.layers.MaxPool2D(pool_size=(2,2), strides=(2,2)))
 model.add(keras.layers.Dropout(0.25))
 
-# model.add(keras.layers.Conv2D(filters = 64, kernel_size = (3,3),padding = 'Same', activation ='relu'))
-# model.add(keras.layers.Conv2D(filters = 64, kernel_size = (3,3),padding = 'Same', activation ='relu'))
-# model.add(keras.layers.MaxPool2D(pool_size=(2,2), strides=(2,2)))
-# model.add(keras.layers.Dropout(0.25))
+model.add(keras.layers.Conv2D(filters = 64, kernel_size = (3,3),padding = 'Same', activation ='relu'))
+model.add(keras.layers.Conv2D(filters = 64, kernel_size = (3,3),padding = 'Same', activation ='relu'))
+model.add(keras.layers.MaxPool2D(pool_size=(2,2), strides=(2,2)))
+model.add(keras.layers.Dropout(0.25))
 
 model.add(keras.layers.Flatten())
 model.add(keras.layers.Dense(1024, activation = "relu"))
@@ -320,11 +344,11 @@ model.compile(optimizer=optimizer, loss="sparse_categorical_crossentropy", metri
 # In[6]:
 model.load_weights(filepath='src/final_weight.h5')
 #%%
-model.load_weights(filepath='final_weight.conv2x2.1024.1.h5')
+model.load_weights(filepath='final_weight.conv2x2.1024.20200323.02.h5')
 #%%
-model.fit(X_train, y_train, epochs=5)
+model.fit(X_train, y_train, epochs=15)
 #%%
-model.save_weights(filepath='final_weight.conv2x3.1024.20200322.1854.h5')
+model.save_weights(filepath='final_weight.conv2x2.1024.20200323.02.h5')
 #%%
 testFiles, testDf =getTestData(jsonTestFilePath)
 
