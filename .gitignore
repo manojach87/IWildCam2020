@@ -1,4 +1,11 @@
 
-src/.ipynb_checkpoints/prepData-checkpoint_old.ipynb
-src/openCV.old.ipynb
-src/prepData.old.ipynb
+src/submission.20200330.csv
+src/submission.2020033008.csv
+src/submission.2020040217.csv
+models/stage-1.34.040309.pth
+models/stage-1.34.040312.pth
+models/stage-1.34.040314.pth
+models/tmp.pth
+src/submission.2020040217_org.csv
+src/submission.2020040309.csv
+src/submission.2020040314.csv
