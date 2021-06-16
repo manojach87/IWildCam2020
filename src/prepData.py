@@ -442,3 +442,4 @@ preds=(pd.merge(submission, preds, on="Id")) #[["Id","Category"]]
 #%%
 preds.to_csv("submissison.20200323.1.csv",index=False)
 
+
