@@ -75,3 +75,4 @@ submissionDf=submissionDf[["ImageId","Label"]]
 submissionDf.to_csv("",sep=",",index=False)
 
 keras.layers.Conv2D(filters=32, kernel_size=(3,3), padding="Same", activation="relu")
+
