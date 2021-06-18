@@ -295,3 +295,4 @@ print(trainDf[trainDf["Sk"]==36].sample(n=2000, random_state=1))
 trainDf2=pd.DataFrame()
 for row in np.asarray(categories1):
     traiDf2=trainDf2.append(trainDf[trainDf["Sk"]==row[1]].sample(n=row[4], random_state=1))
+
