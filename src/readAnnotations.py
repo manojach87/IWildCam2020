@@ -64,3 +64,4 @@ picLocation = 'C:\\Users\\manoj\\PycharmProjects\\tf-tuto\\data\\iwildcam-2020\\
 import readImage as ri # Import readImage.py 
 
 ri.showImage(picLocation)
+
