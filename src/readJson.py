@@ -75,3 +75,4 @@ min = a/10 if a < b else b
   
 print(min) 
 '''
+
