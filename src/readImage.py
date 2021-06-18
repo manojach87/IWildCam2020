@@ -18,3 +18,4 @@ def showImage(loc):
     pyplot.imshow(im)
 
 # showImage(picLocation)
+
